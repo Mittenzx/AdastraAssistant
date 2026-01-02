@@ -4,7 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Manages audio playback for the AI assistant including voice synthesis and sound effects
+ * Manages audio playback for the AI assistant including voice synthesis and sound effects.
+ * 
+ * Note: This is a placeholder implementation that outputs to System.out. In a real
+ * Minecraft mod integration, extend this class and override playVoice() and playSoundEffect()
+ * to implement actual TTS and sound playback using Minecraft's sound system.
+ * 
+ * The audioCache is reserved for future use by integrators who want to implement
+ * audio preloading functionality.
  */
 public class AudioManager {
     private boolean audioEnabled;
@@ -25,8 +32,8 @@ public class AudioManager {
         if (!audioEnabled) {
             return;
         }
-        // In a real implementation, this would use text-to-speech API
-        // For now, we simulate it
+        // Placeholder implementation - outputs to console
+        // In a real implementation, override this method to use TTS API
         System.out.println("[AUDIO] Assistant speaks: " + message);
     }
 
@@ -42,12 +49,21 @@ public class AudioManager {
     }
 
     /**
-     * Preload audio for faster playback
+     * Preload audio for faster playback (reserved for future use by integrators)
      * @param key The cache key
      * @param audioPath The path to the audio file
      */
     public void preloadAudio(String key, String audioPath) {
         audioCache.put(key, audioPath);
+    }
+
+    /**
+     * Get preloaded audio path
+     * @param key The cache key
+     * @return The audio path, or null if not found
+     */
+    public String getPreloadedAudio(String key) {
+        return audioCache.get(key);
     }
 
     public boolean isAudioEnabled() {

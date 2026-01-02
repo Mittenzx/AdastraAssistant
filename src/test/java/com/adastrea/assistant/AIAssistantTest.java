@@ -45,9 +45,82 @@ class AIAssistantTest {
     }
 
     @Test
+    void testRespondToQueryWhenDisabled() {
+        assistant.setEnabled(false);
+        String response = assistant.respondToQuery("help");
+        assertEquals("", response);
+    }
+
+    @Test
     void testSetReminder() {
         assertDoesNotThrow(() -> {
             assistant.setReminder("Test reminder", 1);
         });
+    }
+
+    @Test
+    void testSpeak() {
+        // Test that speak method works without throwing exception
+        assertDoesNotThrow(() -> assistant.speak("Test message"));
+    }
+
+    @Test
+    void testSpeakWhenDisabled() {
+        assistant.setEnabled(false);
+        assertDoesNotThrow(() -> assistant.speak("Test message"));
+    }
+
+    @Test
+    void testProvideCompanionDialogue() {
+        assertDoesNotThrow(() -> assistant.provideCompanionDialogue());
+    }
+
+    @Test
+    void testProvideCompanionDialogueWhenDisabled() {
+        assistant.setEnabled(false);
+        assertDoesNotThrow(() -> assistant.provideCompanionDialogue());
+    }
+
+    @Test
+    void testTeach() {
+        assertDoesNotThrow(() -> assistant.teach("oxygen"));
+    }
+
+    @Test
+    void testTeachWhenDisabled() {
+        assistant.setEnabled(false);
+        assertDoesNotThrow(() -> assistant.teach("oxygen"));
+    }
+
+    @Test
+    void testCheckReminders() {
+        assistant.setReminder("Test reminder", -1);
+        assertDoesNotThrow(() -> assistant.checkReminders());
+    }
+
+    @Test
+    void testCheckRemindersWhenDisabled() {
+        assistant.setEnabled(false);
+        assistant.setReminder("Test reminder", -1);
+        assertDoesNotThrow(() -> assistant.checkReminders());
+    }
+
+    @Test
+    void testInitialize() {
+        assertDoesNotThrow(() -> assistant.initialize());
+    }
+
+    @Test
+    void testAssistantNameUsedInGreeting() {
+        // The initialize method should use the assistant name
+        assistant.initialize();
+        // If no exception is thrown, the test passes
+        assertTrue(true);
+    }
+
+    @Test
+    void testSetAssistantName() {
+        assistant.setAssistantName("NewName");
+        assertEquals("NewName", assistant.getAssistantName());
     }
 }

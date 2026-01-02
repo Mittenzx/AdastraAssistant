@@ -22,15 +22,8 @@ class ReminderSystemTest {
 
     @Test
     void testCheckDueReminders() {
-        // Add a reminder that should trigger immediately (0 minutes)
-        reminderSystem.addReminder("Immediate reminder", 0);
-        
-        // Small delay to ensure time passes
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // Add a reminder that triggers immediately (negative delay puts it in the past)
+        reminderSystem.addReminder("Immediate reminder", -1);
         
         List<String> dueReminders = reminderSystem.checkDueReminders();
         assertEquals(1, dueReminders.size());

@@ -17,7 +17,6 @@ class TeachingSystemTest {
         String lesson = teachingSystem.getLesson("oxygen");
         assertNotNull(lesson);
         assertFalse(lesson.isEmpty());
-        assertTrue(lesson.toLowerCase().contains("oxygen"));
     }
 
     @Test

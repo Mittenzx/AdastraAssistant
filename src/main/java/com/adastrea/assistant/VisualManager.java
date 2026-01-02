@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manages visual components of the AI assistant including notifications and subtitles
+ * Manages visual components of the AI assistant including notifications and subtitles.
+ * 
+ * Note: This is a base implementation with placeholder behavior. In a real Minecraft mod
+ * integration, extend this class to implement actual UI rendering. The subtitleDuration
+ * field is provided for integrators to implement subtitle timeout logic in their UI layer.
  */
 public class VisualManager {
     private boolean visualEnabled;
@@ -48,6 +52,13 @@ public class VisualManager {
      */
     public void clearNotifications() {
         activeNotifications.clear();
+    }
+
+    /**
+     * Clear the current subtitle
+     */
+    public void clearSubtitle() {
+        this.currentSubtitle = "";
     }
 
     /**

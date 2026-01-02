@@ -36,7 +36,7 @@ public class AIAssistant {
      */
     public void initialize() {
         if (isEnabled) {
-            String greeting = dialogueSystem.getGreeting();
+            String greeting = assistantName + " here! " + dialogueSystem.getGreeting();
             speak(greeting);
             visualManager.showNotification(greeting);
         }
