@@ -38,6 +38,7 @@ An in-game AI assistant for the Adastrea (Ad Astra) Minecraft mod that provides 
 - **Audio System**: Text-to-speech voice synthesis for natural conversation
 - **Visual Components**: On-screen notifications, subtitles, and assistant avatar
 - **Companion Dialogue**: Random friendly messages to keep players company
+- **Character Progression**: Mittenz evolves through three relationship stages (Hostile → Curious → Cooperative)
 - **Teaching System**: Tutorials and lessons about game mechanics (oxygen, gravity, navigation, etc.)
 - **Reminder System**: Time-based reminders for important tasks
 - **Interactive Responses**: Answers player questions about game mechanics
@@ -46,14 +47,16 @@ An in-game AI assistant for the Adastrea (Ad Astra) Minecraft mod that provides 
 
 ```
 src/main/java/com/adastrea/assistant/
-├── AIAssistant.java        # Main coordinator class
-├── AudioManager.java       # Handles audio playback and TTS
-├── VisualManager.java      # Manages visual notifications and UI
-├── DialogueSystem.java     # Generates and manages conversations
-├── ReminderSystem.java     # Manages time-based reminders
-├── TeachingSystem.java     # Provides educational content
-├── AssistantConfig.java    # Configuration settings
-└── AssistantDemo.java      # Example usage demonstration
+├── AIAssistant.java           # Main coordinator class
+├── AudioManager.java          # Handles audio playback and TTS
+├── VisualManager.java         # Manages visual notifications and UI
+├── DialogueSystem.java        # Generates and manages conversations
+├── ReminderSystem.java        # Manages time-based reminders
+├── TeachingSystem.java        # Provides educational content
+├── AssistantConfig.java       # Configuration settings
+├── RelationshipStage.java     # Enum for character progression stages
+├── AssistantDemo.java         # Example usage demonstration
+└── MittenzProgressionDemo.java # Demo of character progression
 ```
 
 ## Building
@@ -75,11 +78,20 @@ This project uses Gradle as its build system:
 
 ```java
 // Create and initialize the assistant
-AIAssistant assistant = new AIAssistant("Astra");
+AIAssistant assistant = new AIAssistant("Mittenz");
 assistant.initialize();
 
-// Provide companion dialogue
+// Provide companion dialogue (varies by relationship stage)
 assistant.provideCompanionDialogue();
+
+// Check current relationship stage
+RelationshipStage stage = assistant.getRelationshipStage(); // HOSTILE, CURIOUS, or COOPERATIVE
+
+// Manually progress relationship stage
+assistant.progressRelationshipStage();
+
+// Or set a specific stage
+assistant.setRelationshipStage(RelationshipStage.COOPERATIVE);
 
 // Teach about game mechanics
 assistant.teach("oxygen");
@@ -96,6 +108,33 @@ assistant.setEnabled(true);
 assistant.getAudioManager().setVolume(0.8f);
 assistant.getVisualManager().setSubtitleDuration(7000);
 ```
+
+## Character Progression
+
+Mittenz features a dynamic character progression system with three relationship stages:
+
+### 1. HOSTILE Stage (Initial)
+Mittenz is bratty, confused, and demanding:
+- "Who the fuck are you?"
+- "My dad will have you killed when he finds out about this."
+- "Where are you taking me?"
+- "I demand you give me that body!"
+
+### 2. CURIOUS Stage (After ~5 interactions)
+Mittenz becomes questioning and slightly insightful:
+- "What does this do?"
+- "Wow, I can see all the ship's systems from here."
+- "He's lying to you, you know."
+- "I'm starting to see things differently now."
+
+### 3. COOPERATIVE Stage (After ~15 interactions)
+Mittenz accepts the situation and works with you:
+- "We need to check the oxygen levels."
+- "We should probably investigate that sector."
+- "Let's work together on this one."
+- "We make a pretty good team, don't we?"
+
+The progression happens automatically based on player interactions, or it can be manually controlled for narrative purposes.
 
 ## Integration with Adastrea Mod
 
