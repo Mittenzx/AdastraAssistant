@@ -2,6 +2,7 @@ package com.adastrea.assistant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Mittenz - AI assistant profile based on a copied brain pattern from a girl from the past
@@ -20,12 +21,14 @@ import java.util.List;
 public class MittenzProfile extends AssistantProfile {
     private int skillLevel;  // 0-100, represents learning progress
     private List<String> learnedSystems;
+    private Random random;
     
     public MittenzProfile() {
         super();
         this.name = "Mittenz";
         this.skillLevel = 0;  // Starts off inexperienced
         this.learnedSystems = new ArrayList<>();
+        this.random = new Random();
         
         initializeBackstory();
         initializePersonalityTraits();
@@ -178,7 +181,7 @@ public class MittenzProfile extends AssistantProfile {
             "I wonder if this is what he wanted for me... or if he just couldn't let go."
         };
         
-        int index = (int) (Math.random() * memories.length);
+        int index = random.nextInt(memories.length);
         return memories[index];
     }
 }
