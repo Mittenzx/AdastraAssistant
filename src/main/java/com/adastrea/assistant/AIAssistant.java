@@ -124,8 +124,10 @@ public class AIAssistant {
         
         if (currentStage == RelationshipStage.HOSTILE && interactionCount >= 5) {
             progressRelationshipStage();
-        } else if (currentStage == RelationshipStage.CURIOUS && interactionCount >= 15) {
+            interactionCount = 0; // Reset for next stage
+        } else if (currentStage == RelationshipStage.CURIOUS && interactionCount >= 10) {
             progressRelationshipStage();
+            interactionCount = 0; // Reset for next stage
         }
     }
 
@@ -139,10 +141,12 @@ public class AIAssistant {
 
     /**
      * Manually set the relationship stage
+     * This will also reset the interaction count to ensure consistent progression behavior.
      * @param stage The new relationship stage
      */
     public void setRelationshipStage(RelationshipStage stage) {
         dialogueSystem.setCurrentStage(stage);
+        resetInteractionCount();
     }
 
     /**
@@ -151,12 +155,15 @@ public class AIAssistant {
      */
     public boolean progressRelationshipStage() {
         boolean progressed = dialogueSystem.progressStage();
-        if (progressed && isEnabled) {
-            // Provide feedback about the stage change
-            RelationshipStage newStage = dialogueSystem.getCurrentStage();
-            String stageMessage = getStageTransitionMessage(newStage);
-            if (stageMessage != null) {
-                speak(stageMessage);
+        if (progressed) {
+            resetInteractionCount(); // Reset counter for the new stage
+            if (isEnabled) {
+                // Provide feedback about the stage change
+                RelationshipStage newStage = dialogueSystem.getCurrentStage();
+                String stageMessage = getStageTransitionMessage(newStage);
+                if (stageMessage != null) {
+                    speak(stageMessage);
+                }
             }
         }
         return progressed;

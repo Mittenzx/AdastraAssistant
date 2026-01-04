@@ -128,6 +128,7 @@ class DialogueSystemTest {
         dialogueSystem.setCurrentStage(RelationshipStage.COOPERATIVE);
         String response = dialogueSystem.generateResponse("help");
         assertNotNull(response);
-        assertTrue(response.contains("help") || response.contains("Help"));
+        // Verify it's a helpful, cooperative response, not hostile
+        assertTrue(response.contains("I'm here to help!"));
     }
 }

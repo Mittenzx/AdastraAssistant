@@ -185,11 +185,13 @@ class AIAssistantTest {
             assistant.provideCompanionDialogue();
         }
         assertEquals(RelationshipStage.CURIOUS, assistant.getRelationshipStage());
+        assertEquals(0, assistant.getInteractionCount()); // Counter resets after stage change
         
-        // Interact 10 more times to trigger progression to COOPERATIVE (total 15)
+        // Interact 10 more times to trigger progression to COOPERATIVE
         for (int i = 0; i < 10; i++) {
             assistant.provideCompanionDialogue();
         }
         assertEquals(RelationshipStage.COOPERATIVE, assistant.getRelationshipStage());
+        assertEquals(0, assistant.getInteractionCount()); // Counter resets after stage change
     }
 }

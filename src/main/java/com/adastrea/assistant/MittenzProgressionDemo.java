@@ -19,31 +19,29 @@ public class MittenzProgressionDemo {
         
         displayCurrentStage(mittenz);
         System.out.println("\nMittenz's dialogues:");
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             mittenz.provideCompanionDialogue();
         }
         
         System.out.println("\nPlayer tries to interact:");
         mittenz.respondToQuery("Can you help me?");
-        mittenz.respondToQuery("Where is your dad?");
         
-        // Progress to CURIOUS stage (after 5 interactions, but we'll force it for demo)
+        // Progress to CURIOUS stage (manually demonstrating progression)
         System.out.println("\n[After more interactions...]\n");
         
         // Stage 2: CURIOUS - Starting to question and understand
         System.out.println("--- STAGE 2: CURIOUS ---");
         System.out.println("Mittenz is becoming curious and starting to see things differently.\n");
         
-        mittenz.setRelationshipStage(RelationshipStage.CURIOUS);
+        mittenz.progressRelationshipStage();
         displayCurrentStage(mittenz);
         System.out.println("\nMittenz's dialogues:");
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             mittenz.provideCompanionDialogue();
         }
         
         System.out.println("\nPlayer interactions:");
         mittenz.respondToQuery("What do you think about the ship systems?");
-        mittenz.respondToQuery("Can you help me with oxygen?");
         
         System.out.println("\n[After building trust...]\n");
         
@@ -51,16 +49,15 @@ public class MittenzProgressionDemo {
         System.out.println("--- STAGE 3: COOPERATIVE ---");
         System.out.println("Mittenz has accepted the situation and wants to work together.\n");
         
-        mittenz.setRelationshipStage(RelationshipStage.COOPERATIVE);
+        mittenz.progressRelationshipStage();
         displayCurrentStage(mittenz);
         System.out.println("\nMittenz's dialogues:");
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             mittenz.provideCompanionDialogue();
         }
         
         System.out.println("\nPlayer interactions:");
         mittenz.respondToQuery("Can you help me?");
-        mittenz.respondToQuery("Thanks for your help");
         
         System.out.println("\n--- Automatic Progression Demo ---");
         System.out.println("Now demonstrating automatic stage progression based on interactions.\n");

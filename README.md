@@ -120,21 +120,21 @@ Mittenz is bratty, confused, and demanding:
 - "Where are you taking me?"
 - "I demand you give me that body!"
 
-### 2. CURIOUS Stage (After ~5 interactions)
+### 2. CURIOUS Stage (After 5 interactions in HOSTILE stage)
 Mittenz becomes questioning and slightly insightful:
 - "What does this do?"
 - "Wow, I can see all the ship's systems from here."
 - "He's lying to you, you know."
 - "I'm starting to see things differently now."
 
-### 3. COOPERATIVE Stage (After ~15 interactions)
+### 3. COOPERATIVE Stage (After 10 interactions in CURIOUS stage)
 Mittenz accepts the situation and works with you:
 - "We need to check the oxygen levels."
 - "We should probably investigate that sector."
 - "Let's work together on this one."
 - "We make a pretty good team, don't we?"
 
-The progression happens automatically based on player interactions, or it can be manually controlled for narrative purposes.
+The progression happens automatically based on player interactions (5 interactions per stage to progress), or it can be manually controlled for narrative purposes.
 
 ## Integration with Adastrea Mod
 
