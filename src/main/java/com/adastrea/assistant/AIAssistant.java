@@ -17,6 +17,7 @@ public class AIAssistant {
     private boolean isEnabled;
     private String assistantName;
     private int interactionCount;
+    private AssistantProfile profile;
 
     public AIAssistant() {
         this("Assistant");
@@ -31,6 +32,27 @@ public class AIAssistant {
         this.teachingSystem = new TeachingSystem();
         this.isEnabled = true;
         this.interactionCount = 0;
+        this.profile = null;
+    }
+    
+    /**
+     * Set the assistant profile for personalized behavior
+     * @param profile The assistant profile to use
+     */
+    public void setProfile(AssistantProfile profile) {
+        this.profile = profile;
+        this.dialogueSystem.setProfile(profile);
+        if (profile != null) {
+            this.assistantName = profile.getName();
+        }
+    }
+    
+    /**
+     * Get the current assistant profile
+     * @return The current profile, or null if none is set
+     */
+    public AssistantProfile getProfile() {
+        return profile;
     }
 
     /**
@@ -119,15 +141,31 @@ public class AIAssistant {
     private void trackInteraction() {
         interactionCount++;
         
-        // Progress through stages based on interaction count
-        RelationshipStage currentStage = dialogueSystem.getCurrentStage();
-        
-        if (currentStage == RelationshipStage.HOSTILE && interactionCount >= 5) {
-            progressRelationshipStage();
-            interactionCount = 0; // Reset for next stage
-        } else if (currentStage == RelationshipStage.CURIOUS && interactionCount >= 10) {
-            progressRelationshipStage();
-            interactionCount = 0; // Reset for next stage
+        // If using MittenzProfile, also increase skill level and handle stage progression
+        if (profile instanceof MittenzProfile) {
+            MittenzProfile mittenzProfile = (MittenzProfile) profile;
+            mittenzProfile.increaseSkillLevel(1);  // Each interaction increases skill
+            
+            RelationshipStage currentStage = mittenzProfile.getRelationshipStage();
+            
+            if (currentStage == RelationshipStage.HOSTILE && interactionCount >= 5) {
+                progressRelationshipStage();
+                interactionCount = 0; // Reset for next stage
+            } else if (currentStage == RelationshipStage.CURIOUS && interactionCount >= 10) {
+                progressRelationshipStage();
+                interactionCount = 0; // Reset for next stage
+            }
+        } else if (dialogueSystem.getCurrentStage() != null) {
+            // Fallback for DialogueSystem-only progression
+            RelationshipStage currentStage = dialogueSystem.getCurrentStage();
+            
+            if (currentStage == RelationshipStage.HOSTILE && interactionCount >= 5) {
+                progressRelationshipStage();
+                interactionCount = 0; // Reset for next stage
+            } else if (currentStage == RelationshipStage.CURIOUS && interactionCount >= 10) {
+                progressRelationshipStage();
+                interactionCount = 0; // Reset for next stage
+            }
         }
     }
 
@@ -136,6 +174,9 @@ public class AIAssistant {
      * @return The current relationship stage
      */
     public RelationshipStage getRelationshipStage() {
+        if (profile instanceof MittenzProfile) {
+            return ((MittenzProfile) profile).getRelationshipStage();
+        }
         return dialogueSystem.getCurrentStage();
     }
 
@@ -145,6 +186,9 @@ public class AIAssistant {
      * @param stage The new relationship stage
      */
     public void setRelationshipStage(RelationshipStage stage) {
+        if (profile instanceof MittenzProfile) {
+            ((MittenzProfile) profile).setRelationshipStage(stage);
+        }
         dialogueSystem.setCurrentStage(stage);
         resetInteractionCount();
     }
@@ -154,12 +198,22 @@ public class AIAssistant {
      * @return true if progressed, false if already at final stage
      */
     public boolean progressRelationshipStage() {
-        boolean progressed = dialogueSystem.progressStage();
+        boolean progressed = false;
+        
+        if (profile instanceof MittenzProfile) {
+            MittenzProfile mittenzProfile = (MittenzProfile) profile;
+            progressed = mittenzProfile.progressRelationshipStage();
+            // Sync with DialogueSystem
+            dialogueSystem.setCurrentStage(mittenzProfile.getRelationshipStage());
+        } else {
+            progressed = dialogueSystem.progressStage();
+        }
+        
         if (progressed) {
             resetInteractionCount(); // Reset counter for the new stage
             if (isEnabled) {
                 // Provide feedback about the stage change
-                RelationshipStage newStage = dialogueSystem.getCurrentStage();
+                RelationshipStage newStage = getRelationshipStage();
                 String stageMessage = getStageTransitionMessage(newStage);
                 if (stageMessage != null) {
                     speak(stageMessage);
@@ -173,6 +227,11 @@ public class AIAssistant {
      * Get a message for stage transitions
      */
     private String getStageTransitionMessage(RelationshipStage newStage) {
+        if (profile instanceof MittenzProfile) {
+            return ((MittenzProfile) profile).getStageTransitionMessage(newStage);
+        }
+        
+        // Fallback messages
         switch (newStage) {
             case CURIOUS:
                 return "Wait... maybe I should understand what's happening here.";

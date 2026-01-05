@@ -15,6 +15,7 @@ public class DialogueSystem {
     private final Map<RelationshipStage, List<String>> stageSpecificDialogues;
     private final Random random;
     private RelationshipStage currentStage;
+    private AssistantProfile profile;
 
     public DialogueSystem() {
         this.random = new Random();
@@ -22,8 +23,29 @@ public class DialogueSystem {
         this.companionDialogues = new ArrayList<>();
         this.stageSpecificDialogues = new HashMap<>();
         this.currentStage = RelationshipStage.HOSTILE; // Start at hostile stage
+        this.profile = null;
         initializeDialogues();
         initializeStageSpecificDialogues();
+    }
+    
+    /**
+     * Set an assistant profile for personalized dialogue
+     * @param profile The assistant profile to use
+     */
+    public void setProfile(AssistantProfile profile) {
+        this.profile = profile;
+        // Sync stage with profile if it's a MittenzProfile
+        if (profile instanceof MittenzProfile) {
+            this.currentStage = ((MittenzProfile) profile).getRelationshipStage();
+        }
+    }
+    
+    /**
+     * Get the current assistant profile
+     * @return The current profile, or null if none is set
+     */
+    public AssistantProfile getProfile() {
+        return profile;
     }
 
     /**
@@ -98,6 +120,11 @@ public class DialogueSystem {
      * @return A greeting message
      */
     public String getGreeting() {
+        // Use profile greeting if available
+        if (profile != null) {
+            return profile.getProfileGreeting();
+        }
+        
         if (greetings.isEmpty()) {
             return "Hello!";
         }
@@ -110,6 +137,15 @@ public class DialogueSystem {
      * @return A companion message
      */
     public String getRandomCompanionDialogue() {
+        // Use profile companion dialogues if available
+        if (profile != null) {
+            List<String> profileDialogues = profile.getProfileCompanionDialogues();
+            if (!profileDialogues.isEmpty()) {
+                return profileDialogues.get(random.nextInt(profileDialogues.size()));
+            }
+        }
+        
+        // Fallback to stage-specific dialogues
         List<String> dialogues = stageSpecificDialogues.get(currentStage);
         if (dialogues == null || dialogues.isEmpty()) {
             // Fallback to default dialogues
