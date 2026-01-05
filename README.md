@@ -38,6 +38,7 @@ An in-game AI assistant for the Adastrea (Ad Astra) Minecraft mod that provides 
 - **Audio System**: Text-to-speech voice synthesis for natural conversation
 - **Visual Components**: On-screen notifications, subtitles, and assistant avatar
 - **Companion Dialogue**: Random friendly messages to keep players company
+- **Character Progression**: Mittenz evolves through three relationship stages (Hostile → Curious → Cooperative)
 - **Teaching System**: Tutorials and lessons about game mechanics (oxygen, gravity, navigation, etc.)
 - **Reminder System**: Time-based reminders for important tasks
 - **Interactive Responses**: Answers player questions about game mechanics
@@ -64,6 +65,16 @@ Mittenz's father was a researcher at a Japanese robotics company who couldn't ac
 
 ```
 src/main/java/com/adastrea/assistant/
+├── AIAssistant.java           # Main coordinator class
+├── AudioManager.java          # Handles audio playback and TTS
+├── VisualManager.java         # Manages visual notifications and UI
+├── DialogueSystem.java        # Generates and manages conversations
+├── ReminderSystem.java        # Manages time-based reminders
+├── TeachingSystem.java        # Provides educational content
+├── AssistantConfig.java       # Configuration settings
+├── RelationshipStage.java     # Enum for character progression stages
+├── AssistantDemo.java         # Example usage demonstration
+└── MittenzProgressionDemo.java # Demo of character progression
 ├── AIAssistant.java        # Main coordinator class
 ├── AudioManager.java       # Handles audio playback and TTS
 ├── VisualManager.java      # Manages visual notifications and UI
@@ -97,12 +108,36 @@ This project uses Gradle as its build system:
 ### Basic Usage
 
 ```java
-// Create and initialize the assistant
-AIAssistant assistant = new AIAssistant("Astra");
+// Create and initialize the assistant with Mittenz profile
+AIAssistant assistant = new AIAssistant("Mittenz");
+MittenzProfile mittenzProfile = new MittenzProfile();
+assistant.setProfile(mittenzProfile);
 assistant.initialize();
 
-// Provide companion dialogue
+// Provide companion dialogue (varies by relationship stage and skill level)
 assistant.provideCompanionDialogue();
+
+// Check current relationship stage
+RelationshipStage stage = assistant.getRelationshipStage(); // HOSTILE, CURIOUS, or COOPERATIVE
+
+// Check skill level
+int skillLevel = mittenzProfile.getSkillLevel(); // 0-100
+
+// Manually progress relationship stage
+assistant.progressRelationshipStage();
+
+// Or set a specific stage
+assistant.setRelationshipStage(RelationshipStage.COOPERATIVE);
+
+// Mittenz learns new systems (increases skill level)
+mittenzProfile.learnSystem("Navigation");
+mittenzProfile.learnSystem("Life Support");
+
+// Increase skill level directly
+mittenzProfile.increaseSkillLevel(10);
+
+// Access memory fragments
+String memory = mittenzProfile.getMemoryFragment();
 
 // Teach about game mechanics
 assistant.teach("oxygen");
@@ -120,6 +155,65 @@ assistant.getAudioManager().setVolume(0.8f);
 assistant.getVisualManager().setSubtitleDuration(7000);
 ```
 
+## Character Progression
+
+Mittenz features an integrated dual progression system combining relationship stages with skill-level growth:
+
+### Relationship Stages
+
+Mittenz progresses through three distinct relationship stages based on player interactions:
+
+#### 1. HOSTILE Stage (Initial)
+Mittenz is bratty, confused, and demanding:
+- "Who the fuck are you?"
+- "My dad will have you killed when he finds out about this."
+- "Where are you taking me?"
+- "I demand you give me that body!"
+
+**Progression**: After 5 interactions → CURIOUS
+
+#### 2. CURIOUS Stage
+Mittenz becomes questioning and slightly insightful:
+- "What does this do?"
+- "Wow, I can see all the ship's systems from here."
+- "He's lying to you, you know."
+- "I'm starting to see things differently now."
+
+**Progression**: After 10 interactions → COOPERATIVE
+
+#### 3. COOPERATIVE Stage
+Mittenz accepts the situation and works with you:
+- "We need to check the oxygen levels."
+- "We should probably investigate that sector."
+- "Let's work together on this one."
+- "We make a pretty good team, don't we?"
+
+### Skill Level System (0-100)
+
+In addition to relationship stages, Mittenz has a skill level that represents her learning and adaptation:
+
+- **0-20**: Inexperienced, uncertain, struggling to understand systems
+- **20-50**: Growing confidence, starting to master basic functions
+- **50-80**: Proficient, processes information quickly
+- **80-100**: Expert, systems are second nature
+
+Skill level increases through:
+- Each player interaction (+1 skill)
+- Learning new ship systems (+5 skill per system)
+- Manual skill increases
+
+### Backstory
+
+Mittenz is not a traditional AI but a digital copy of a young girl's brain. Her father, a researcher for a Japanese robotics company, used experimental brain imaging technology to save her consciousness before she passed from an incurable illness. This unique origin means she learns and evolves like a human, with genuine emotions and memories of her past life.
+
+**Key Character Traits:**
+- Curious and eager to learn
+- Emotionally authentic responses
+- Develops genuine attachment to the player
+- Remembers her human past in fragments
+- Human-like learning and adaptation
+
+The progression happens automatically based on player interactions, or it can be manually controlled for narrative purposes. See [MITTENZ_CHARACTER.md](docs/MITTENZ_CHARACTER.md) for complete character documentation.
 ### Using Mittenz Profile
 
 ```java

@@ -45,18 +45,28 @@ class MittenzProfileTest {
     
     @Test
     void testGreetingChangesBySkillLevel() {
-        String greetingLow = mittenz.getProfileGreeting();
+        // Test greetings at different combinations of relationship stage and skill level
+        String greetingHostile = mittenz.getProfileGreeting();
         
-        // Increase skill level significantly
-        mittenz.increaseSkillLevel(60);
-        String greetingMid = mittenz.getProfileGreeting();
+        // Progress to CURIOUS stage
+        mittenz.setRelationshipStage(RelationshipStage.CURIOUS);
+        String greetingCuriousLow = mittenz.getProfileGreeting();
         
+        // Increase skill level
         mittenz.increaseSkillLevel(40);
-        String greetingHigh = mittenz.getProfileGreeting();
+        String greetingCuriousMid = mittenz.getProfileGreeting();
         
-        // Greetings should be different at different skill levels
-        assertNotEquals(greetingLow, greetingMid);
-        assertNotEquals(greetingMid, greetingHigh);
+        // Progress to COOPERATIVE stage
+        mittenz.setRelationshipStage(RelationshipStage.COOPERATIVE);
+        String greetingCoopMid = mittenz.getProfileGreeting();
+        
+        mittenz.increaseSkillLevel(60);
+        String greetingCoopHigh = mittenz.getProfileGreeting();
+        
+        // Greetings should be different across stages and skill levels
+        assertNotEquals(greetingHostile, greetingCuriousLow);
+        assertNotEquals(greetingCuriousLow, greetingCoopMid);
+        assertNotEquals(greetingCoopMid, greetingCoopHigh);
     }
     
     @Test
