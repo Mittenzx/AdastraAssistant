@@ -665,7 +665,7 @@ public class CoquiTTSAudioManager extends AudioManager {
         try {
             // Call Python TTS script
             Process process = new ProcessBuilder(
-                "python3", "tts_generate.py", 
+                "python3", "scripts/tts_generate.py", 
                 "--text", message,
                 "--output", "temp_audio.wav"
             ).start();
@@ -791,6 +791,9 @@ The assistant follows a **modular, layered architecture** inspired by industry b
 ```java
 package com.adastrea.assistant.nlu;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Natural Language Understanding component
  * Parses player input to extract intent and entities
@@ -850,6 +853,12 @@ public class Intent {
     private float confidence;
     
     // Getters and setters...
+    public void setType(IntentType type) { this.type = type; }
+    public IntentType getType() { return type; }
+    public void setTopic(String topic) { this.topic = topic; }
+    public String getTopic() { return topic; }
+    public void setEntities(Map<String, Object> entities) { this.entities = entities; }
+    public Map<String, Object> getEntities() { return entities; }
 }
 
 public enum IntentType {
@@ -875,6 +884,8 @@ public enum IntentType {
 ```java
 package com.adastrea.assistant.dm;
 
+import java.util.Optional;
+
 /**
  * Enhanced Dialogue Manager with explicit state tracking
  */
@@ -882,6 +893,12 @@ public class DialogueManager {
     private ConversationState currentState;
     private ConversationHistory history;
     private ContextManager contextManager;
+    
+    public DialogueManager() {
+        this.currentState = new ConversationState();
+        this.history = new ConversationHistory();
+        this.contextManager = new ContextManager();
+    }
     
     /**
      * Process intent and determine appropriate response action
@@ -931,7 +948,7 @@ public class DialogueManager {
      */
     public Optional<DialogueAction> checkProactiveOpportunity(GameContext gameContext) {
         // Check if it's a good time for companion dialogue
-        if (contextManager.isPlayerIdle() && history.getTimeSinceLastDialogue() > 5 * 60 * 1000) {
+        if (history.getTimeSinceLastDialogue() > 5 * 60 * 1000) {
             DialogueAction action = new DialogueAction();
             action.setType(ActionType.COMPANION_CHAT);
             action.setPriority(Priority.LOW);
@@ -962,6 +979,14 @@ public class DialogueAction {
     private ConversationContext context;
     
     // Getters and setters...
+    public void setType(ActionType type) { this.type = type; }
+    public ActionType getType() { return type; }
+    public void setTopic(String topic) { this.topic = topic; }
+    public String getTopic() { return topic; }
+    public void setPriority(Priority priority) { this.priority = priority; }
+    public void setParameters(Map<String, Object> parameters) { this.parameters = parameters; }
+    public void setContext(ConversationContext context) { this.context = context; }
+    public ConversationContext getContext() { return context; }
 }
 
 public enum ActionType {
@@ -972,6 +997,91 @@ public enum ActionType {
     COMPANION_CHAT,
     ACKNOWLEDGE,
     ASK_CLARIFICATION
+}
+
+public enum Priority {
+    LOW,
+    MEDIUM,
+    HIGH,
+    CRITICAL
+}
+
+// Placeholder classes - implement based on your game's requirements
+class ConversationState {
+    // Track current conversation state
+}
+
+class ConversationHistory {
+    private long lastDialogueTime = System.currentTimeMillis();
+    
+    public void addIntent(Intent intent) {
+        lastDialogueTime = System.currentTimeMillis();
+    }
+    
+    public long getTimeSinceLastDialogue() {
+        return System.currentTimeMillis() - lastDialogueTime;
+    }
+}
+
+class GameContext {
+    private int oxygenLevel = 100;
+    private boolean significantChange = false;
+    private boolean memorableEvent = false;
+    private GameEvent latestEvent;
+    private Milestone currentMilestone;
+    private String currentSituation = "exploration";
+    
+    public int getOxygenLevel() {
+        return oxygenLevel;
+    }
+    
+    public boolean hasSignificantChange() {
+        return significantChange;
+    }
+    
+    public GameEvent getLatestEvent() {
+        return latestEvent;
+    }
+    
+    public boolean isMemorableEvent() {
+        return memorableEvent;
+    }
+    
+    public Milestone getCurrentMilestone() {
+        return currentMilestone;
+    }
+    
+    public String getCurrentSituation() {
+        return currentSituation;
+    }
+    
+    // Add other game state methods as needed
+}
+
+class ConversationContext {
+    // Contains relevant context for generating responses
+    private String currentLocation = "";
+    private boolean playerBusy = false;
+    
+    public String getCurrentLocation() {
+        return currentLocation;
+    }
+    
+    public boolean isPlayerBusy() {
+        return playerBusy;
+    }
+    
+    public void setGameState(GameContext gameState) {
+        // Store game state for context
+    }
+    
+    public void setRecentHistory(List<GameEvent> history) {
+        // Store recent events
+    }
+    
+    public void setRelevantMemories(List<Memory> memories) {
+        // Store relevant memories
+    }
 }
 ```
 
@@ -986,13 +1096,23 @@ public enum ActionType {
 ```java
 package com.adastrea.assistant.nlg;
 
+import java.util.Random;
+
 /**
  * Natural Language Generation component
  * Generates contextual, personality-appropriate responses
+ * 
+ * Note: This is a simplified example. Methods like getAnswerForTopic(), 
+ * addHostileTone(), etc. should be implemented based on your specific needs.
  */
 public class NLGEngine {
     private PersonalityProfile personality;
     private TemplateLibrary templates;
+    
+    public NLGEngine(PersonalityProfile personality, TemplateLibrary templates) {
+        this.personality = personality;
+        this.templates = templates;
+    }
     
     /**
      * Generate response based on action and context
@@ -1052,6 +1172,50 @@ public class NLGEngine {
         };
         return friendlyPrefixes[new Random().nextInt(friendlyPrefixes.length)] + message;
     }
+    
+    // Placeholder methods - implement these based on your game's content
+    private String getAnswerForTopic(String topic) {
+        return "Here's information about " + topic + ".";
+    }
+    
+    private String addHostileTone(String message) {
+        return "Fine. " + message;
+    }
+    
+    private String addCuriousTone(String message) {
+        return "Hmm, interesting. " + message;
+    }
+    
+    private String generateLesson(String topic, ConversationContext context) {
+        return "Let me teach you about " + topic + ".";
+    }
+    
+    private String generateWarning(String topic, ConversationContext context) {
+        return "Warning! Issue with " + topic + "!";
+    }
+    
+    private String generateAcknowledgment(ConversationContext context) {
+        return "Understood.";
+    }
+}
+
+// Placeholder classes - implement based on your requirements
+class PersonalityProfile {
+    public RelationshipStage getRelationshipStage() {
+        return RelationshipStage.COOPERATIVE;
+    }
+}
+
+class TemplateLibrary {
+    public String getRandomDialogue(String category) {
+        return "Sample dialogue for " + category;
+    }
+}
+
+enum RelationshipStage {
+    HOSTILE,
+    CURIOUS,
+    COOPERATIVE
 }
 ```
 
@@ -1068,9 +1232,14 @@ package com.adastrea.assistant.tts;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * TTS Engine using Coqui TTS
+ * 
+ * Note: This example uses placeholder classes (TTSEngine, AudioCache, TTSOptions, TTSException).
+ * Implement these based on your specific requirements.
  */
 public class CoquiTTSEngine implements TTSEngine {
     private final String pythonPath;
@@ -1097,15 +1266,14 @@ public class CoquiTTSEngine implements TTSEngine {
             // Prepare output file
             File outputFile = File.createTempFile("tts_", ".wav");
             
-            // Build Python command
+            // Build Python command (removed --pitch as it's not supported)
             ProcessBuilder pb = new ProcessBuilder(
                 pythonPath,
                 ttsScriptPath,
                 "--text", text,
                 "--model", modelName,
                 "--output", outputFile.getAbsolutePath(),
-                "--speed", String.valueOf(options.getSpeed()),
-                "--pitch", String.valueOf(options.getPitch())
+                "--speed", String.valueOf(options.getSpeed())
             );
             
             // Execute TTS generation
@@ -1137,6 +1305,58 @@ public class CoquiTTSEngine implements TTSEngine {
             }
         }
     }
+    
+    private String generateCacheKey(String text, TTSOptions options) {
+        return text + "_" + options.getSpeed();
+    }
+}
+
+// Placeholder interfaces and classes - implement these based on your needs
+interface TTSEngine {
+    File synthesize(String text, TTSOptions options) throws TTSException;
+    void preload(String[] commonPhrases);
+}
+
+class TTSOptions {
+    private float speed = 1.0f;
+    
+    public static TTSOptions standard() {
+        return new TTSOptions();
+    }
+    
+    public float getSpeed() {
+        return speed;
+    }
+    
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+}
+
+class TTSException extends Exception {
+    public TTSException(String message) {
+        super(message);
+    }
+    
+    public TTSException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+
+class AudioCache {
+    private Map<String, File> cache = new HashMap<>();
+    
+    public boolean contains(String key) {
+        return cache.containsKey(key);
+    }
+    
+    public File get(String key) {
+        return cache.get(key);
+    }
+    
+    public void put(String key, File file) {
+        cache.put(key, file);
+    }
 }
 ```
 
@@ -1152,7 +1372,7 @@ def main():
     parser.add_argument('--model', required=True)
     parser.add_argument('--output', required=True)
     parser.add_argument('--speed', type=float, default=1.0)
-    parser.add_argument('--pitch', type=float, default=1.0)
+    # Note: pitch is not supported by most Coqui TTS models
     args = parser.parse_args()
     
     # Initialize TTS
@@ -1180,6 +1400,9 @@ if __name__ == '__main__':
 ```java
 package com.adastrea.assistant.context;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 /**
  * Manages contextual awareness and memory
  */
@@ -1187,6 +1410,11 @@ public class ContextManager {
     private GameContext currentGameContext;
     private ShortTermMemory shortTermMemory;
     private LongTermMemory longTermMemory;
+    
+    public ContextManager() {
+        this.shortTermMemory = new ShortTermMemory();
+        this.longTermMemory = new LongTermMemory();
+    }
     
     /**
      * Update with current game state
@@ -1234,6 +1462,11 @@ public class ShortTermMemory {
     private final Map<String, Integer> recentTopics;
     private static final int MAX_EVENTS = 50;
     
+    public ShortTermMemory() {
+        this.recentEvents = new LinkedList<>();
+        this.recentTopics = new HashMap<>();
+    }
+    
     public void recordEvent(GameEvent event) {
         recentEvents.add(event);
         if (recentEvents.size() > MAX_EVENTS) {
@@ -1254,20 +1487,69 @@ public class ShortTermMemory {
 
 /**
  * Long-term memory (persistent across sessions)
+ * 
+ * Note: This is a simplified example. In production, use a real database
+ * like SQLite, H2, or a file-based persistence system.
  */
 public class LongTermMemory {
-    private final Database database; // Could be SQLite or file-based
+    private final List<Milestone> milestones = new ArrayList<>();
     
     public void recordMilestone(Milestone milestone) {
-        database.save(milestone);
+        milestones.add(milestone);
     }
     
     public List<Memory> query(String situation) {
-        // Retrieve relevant memories for current situation
-        return database.query(
-            "SELECT * FROM memories WHERE situation = ? ORDER BY importance DESC LIMIT 5",
-            situation
-        );
+        // Simple in-memory query - replace with database in production
+        return milestones.stream()
+            .filter(m -> m.getSituation().equals(situation))
+            .map(m -> new Memory(m.getDescription()))
+            .limit(5)
+            .collect(Collectors.toList());
+    }
+}
+
+// Placeholder classes - implement these based on your game's architecture
+class GameEvent {
+    private String topic;
+    private long timestamp;
+    
+    public GameEvent(String topic) {
+        this.topic = topic;
+        this.timestamp = System.currentTimeMillis();
+    }
+    
+    public String getTopic() {
+        return topic;
+    }
+}
+
+class Milestone {
+    private String situation;
+    private String description;
+    
+    public Milestone(String situation, String description) {
+        this.situation = situation;
+        this.description = description;
+    }
+    
+    public String getSituation() {
+        return situation;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+}
+
+class Memory {
+    private String content;
+    
+    public Memory(String content) {
+        this.content = content;
+    }
+    
+    public String getContent() {
+        return content;
     }
 }
 ```
@@ -1610,10 +1892,7 @@ public class TTSTestDemo {
     public static void main(String[] args) throws InterruptedException {
         System.out.println("=== Coqui TTS Integration Test ===\n");
         
-        // Create AI Assistant with Coqui TTS
-        AIAssistant assistant = new AIAssistant("Mittenz");
-        
-        // Replace audio manager with Coqui TTS version
+        // Create Coqui TTS audio manager
         CoquiTTSAudioManager ttsManager = new CoquiTTSAudioManager();
         
         // Test basic speech
