@@ -20,8 +20,17 @@ import argparse
 import sys
 import json
 import random
+import wave
 import numpy as np
 from pathlib import Path
+
+# Check for scipy (optional, for audio processing)
+try:
+    from scipy import signal
+    SCIPY_AVAILABLE = True
+except ImportError:
+    SCIPY_AVAILABLE = False
+    print("WARNING: scipy not installed. Some audio effects will be disabled. Install with: pip install scipy", file=sys.stderr)
 
 # Check for TTS library
 try:
@@ -322,8 +331,7 @@ class EmotionalVoiceEngine:
             audio = audio + noise
         
         # Add tension for urgency (boost high frequencies)
-        if profile['tension'] > 0.6:
-            from scipy import signal
+        if profile['tension'] > 0.6 and SCIPY_AVAILABLE:
             tension_amount = (profile['tension'] - 0.6) * 0.2
             b, a = signal.butter(2, 2000, 'highpass', fs=sr)
             filtered = signal.filtfilt(b, a, audio)
@@ -345,7 +353,6 @@ class EmotionalVoiceEngine:
             # Fallback: save raw audio (may not work perfectly)
             print("WARNING: Audio processing libraries not available, saving basic audio", file=sys.stderr)
             # This is a simplified save that may not work with all TTS outputs
-            import wave
             with wave.open(output_path, 'w') as wf:
                 wf.setnchannels(1)  # Mono
                 wf.setsampwidth(2)  # 16-bit
