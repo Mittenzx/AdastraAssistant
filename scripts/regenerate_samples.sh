@@ -57,10 +57,11 @@ generate_audio() {
         --model "$MODEL" \
         2>&1 | grep -E "(SUCCESS|ERROR|WARNING)" || true
     
-    if [ -f "$output" ]; then
+    # Verify that the output file exists and is not empty
+    if [ -s "$output" ]; then
         echo -e "${GREEN}  ✓ Generated successfully${NC}"
     else
-        echo -e "${RED}  ✗ Failed to generate${NC}"
+        echo -e "${RED}  ✗ Failed to generate (missing or empty output file)${NC}"
         return 1
     fi
     echo ""
@@ -68,9 +69,14 @@ generate_audio() {
 
 # Create backup of original files
 echo -e "${YELLOW}Creating backup of original files...${NC}"
-BACKUP_DIR="${AUDIO_DIR}_backup_$(date +%Y%m%d_%H%M%S)"
-cp -r "$AUDIO_DIR" "$BACKUP_DIR"
-echo -e "${GREEN}✓ Backup created: $BACKUP_DIR${NC}"
+if [ -d "$AUDIO_DIR" ]; then
+    BACKUP_DIR="${AUDIO_DIR}_backup_$(date +%Y%m%d_%H%M%S)"
+    cp -r "$AUDIO_DIR" "$BACKUP_DIR"
+    echo -e "${GREEN}✓ Backup created: $BACKUP_DIR${NC}"
+else
+    echo -e "${YELLOW}Warning: Audio directory '$AUDIO_DIR' does not exist. Skipping backup and creating directory.${NC}"
+    mkdir -p "$AUDIO_DIR"
+fi
 echo ""
 
 # ============================================================================

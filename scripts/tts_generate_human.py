@@ -88,7 +88,7 @@ EMOTION_PROFILES = {
         'volume': 1.05,
         'tension': 0.6,
         'breathiness': 0.4,
-        'description': 'Amazed, intrigued'
+        'description': 'Intellectually amazed and deeply intrigued, more wonder than high-energy excitement'
     },
     
     # Cooperative stage emotions
@@ -326,6 +326,11 @@ class EmotionalVoiceEngine:
         
         # Add breathiness for warmth
         if profile['breathiness'] > 0.5:
+            # Normalize audio first to prevent clipping when adding noise
+            max_amplitude = np.max(np.abs(audio))
+            if max_amplitude > 0:
+                audio = audio / max_amplitude * 0.9  # Scale to 90% to leave headroom
+            
             noise_amount = (profile['breathiness'] - 0.5) * 0.015
             noise = np.random.randn(len(audio)) * noise_amount
             audio = audio + noise
