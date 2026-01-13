@@ -48,6 +48,8 @@ These TTS-generated voice samples let you **hear Mittenz actually speak**! Gener
 ### Dialogue - Voice Samples by Relationship Stage
 
 #### HOSTILE Stage (Angry, Demanding)
+> **Note:** HOSTILE stage dialogue contains mild profanity reflecting the character's initial distressed/angry state. For family-friendly versions, consider alternative dialogue or filtering.
+
 - **`mittenz_hostile_01.wav`** - *"Who the hell are you? Where is my dad?"*
 - **`mittenz_hostile_02.wav`** - *"You can't do this to me! Do you know who I am?"*
 - **`mittenz_hostile_03.wav`** - *"I demand you tell me what's going on right now!"*
@@ -171,9 +173,9 @@ Audio files for user interface interactions:
 - **Bit Depth**: 16-bit
 - **Channels**: Mono (1 channel)
 - **Format**: WAV PCM uncompressed
-- **Voice Engine**: espeak (en-us+f3)
-- **Voice Characteristics**: Young female voice with adjusted pitch (55-62) and speed (155-175 WPM)
-- **Total Voice Files**: 19 files (~3-4 MB)
+- **Voice Engine**: espeak text-to-speech (voice: en-us+f3)
+- **Voice Characteristics**: Young female voice with adjusted pitch (55-62%, default 50%) and speed (155-175 WPM)
+- **Total Voice Files**: 19 files (~4-5 MB)
 
 ### Tone-Based Samples (Musical Tones)
 - **Sample Rate**: 44100 Hz (CD quality)
