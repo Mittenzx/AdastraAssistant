@@ -1,6 +1,8 @@
 # Sample Audio Files for AdastreaAssistant
 
-This directory contains sample audio files to demonstrate the audio capabilities of the AdastreaAssistant system. These are placeholder audio files that can be used for testing and development purposes.
+This directory contains sample audio files to demonstrate the audio capabilities of the AdastreaAssistant system. 
+
+**Important Note:** These are **tone-based** placeholder audio files (synthesized musical tones and chords), **not voice recordings**. They are intended for testing and development purposes only. For production use, replace these with actual voice recordings from voice actors or text-to-speech (TTS) generated speech.
 
 ## Directory Structure
 
@@ -183,9 +185,9 @@ switch (stage) {
 
 ## Customization
 
-These are placeholder audio files. For production use, you should:
+These audio files are **synthesized musical tones and chords**, not actual voice or speech. For production use, you should:
 
-1. **Replace with professional recordings**: Use voice actors for Mittenz's dialogue
+1. **Replace with professional voice recordings**: Use voice actors for Mittenz's dialogue
 2. **Implement Text-to-Speech**: Integrate TTS engines like:
    - Google Cloud Text-to-Speech
    - Amazon Polly
