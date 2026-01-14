@@ -87,7 +87,11 @@ public class CoquiTTSAudioManager extends AudioManager {
                 pythonExecutable, "-c", "from TTS.api import TTS; print('OK')"
             ).start();
             
-            process.waitFor(5, TimeUnit.SECONDS);
+            boolean completed = process.waitFor(5, TimeUnit.SECONDS);
+            if (!completed) {
+                process.destroyForcibly();
+                return false;
+            }
             int exitCode = process.exitValue();
             
             if (exitCode == 0) {
@@ -193,7 +197,7 @@ public class CoquiTTSAudioManager extends AudioManager {
             // Wait for completion (max 60 seconds)
             boolean completed = process.waitFor(60, TimeUnit.SECONDS);
             if (!completed) {
-                process.destroy();
+                process.destroyForcibly();
                 System.err.println("[ERROR] TTS generation timed out");
                 return null;
             }

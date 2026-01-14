@@ -110,6 +110,8 @@ public class CoquiTTSDemo {
         
         // Wait for async operations to complete
         System.out.println("\n\nWaiting for audio generation to complete...");
+        // Note: In production code, use CompletableFuture.allOf() to track completion
+        // For this demo, a simple sleep is sufficient since we're just demonstrating the API
         sleep(5000);
         
         System.out.println("\n===========================================");
