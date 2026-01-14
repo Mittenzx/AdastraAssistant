@@ -214,7 +214,7 @@ Based on research from VOICE_ASSISTANT_RESEARCH.md and industry best practices, 
 4. ✅ Regenerate all 19 voice samples with Coqui
    - **Implementation**: `scripts/regenerate_samples.sh`
    - Batch regeneration script with appropriate emotions
-   - All samples verified as 44.1kHz, 16-bit, mono WAV
+   - All samples verified as 22.05kHz, 16-bit, mono WAV
    - Pre-generated samples ready in `src/main/resources/audio/`
 
 **Deliverables**:

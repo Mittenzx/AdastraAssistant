@@ -3,9 +3,11 @@ package com.adastrea.assistant;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -56,8 +58,8 @@ public class CoquiTTSAudioManager extends AudioManager {
     public CoquiTTSAudioManager(String projectRoot, String pythonExecutable, boolean enableTTS) {
         super();
         this.pythonExecutable = pythonExecutable;
-        this.ttsScriptPath = projectRoot + "/scripts/tts_generate_human.py";
-        this.audioOutputDir = projectRoot + "/src/main/resources/audio/generated";
+        this.ttsScriptPath = Paths.get(projectRoot, "scripts", "tts_generate_human.py").toString();
+        this.audioOutputDir = Paths.get(projectRoot, "src", "main", "resources", "audio", "generated").toString();
         this.usePythonTTS = enableTTS && checkTTSAvailability();
         
         // Create output directory if it doesn't exist
@@ -113,20 +115,21 @@ public class CoquiTTSAudioManager extends AudioManager {
      * 
      * @param message The message to speak
      * @param emotion The emotion to convey (hostile, curious, cooperative, excited, etc.)
+     * @return CompletableFuture that completes when audio generation finishes (or immediately if disabled)
      */
-    public void playVoiceWithEmotion(String message, String emotion) {
+    public CompletableFuture<Void> playVoiceWithEmotion(String message, String emotion) {
         if (!isAudioEnabled()) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         
         if (!usePythonTTS) {
             // Fallback to console output
             System.out.println("[AUDIO] Assistant speaks (" + emotion + "): " + message);
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         
         // Generate audio asynchronously
-        CompletableFuture.runAsync(() -> {
+        return CompletableFuture.runAsync(() -> {
             try {
                 String audioPath = generateAudio(message, emotion);
                 if (audioPath != null) {
@@ -149,9 +152,10 @@ public class CoquiTTSAudioManager extends AudioManager {
      */
     private String generateAudio(String text, String emotion) {
         try {
-            // Create unique filename based on text hash and emotion
-            String filename = "tts_" + Math.abs(text.hashCode()) + "_" + emotion + ".wav";
-            String outputPath = audioOutputDir + "/" + filename;
+            // Create unique filename based on SHA-256 hash and emotion
+            String hash = generateHash(text + emotion);
+            String filename = "tts_" + hash.substring(0, 16) + ".wav";
+            String outputPath = Paths.get(audioOutputDir, filename).toString();
             
             // Check cache first
             File cachedFile = new File(outputPath);
@@ -246,6 +250,31 @@ public class CoquiTTSAudioManager extends AudioManager {
     @Override
     public void playVoice(String message) {
         playVoiceWithEmotion(message, "neutral");
+    }
+    
+    /**
+     * Generate SHA-256 hash for cache key.
+     * 
+     * @param input The input string to hash
+     * @return Hex string of the hash
+     */
+    private String generateHash(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (Exception e) {
+            // Fallback to hashCode if SHA-256 fails
+            return String.valueOf(Math.abs(input.hashCode()));
+        }
     }
     
     /**

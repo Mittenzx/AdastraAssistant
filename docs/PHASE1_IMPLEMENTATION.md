@@ -178,7 +178,7 @@ audioManager.playVoice("System initializing.");
 
 All generated audio files follow these specifications:
 - **Format**: WAV (RIFF PCM)
-- **Sample Rate**: 44100 Hz
+- **Sample Rate**: 22050 Hz
 - **Bit Depth**: 16-bit
 - **Channels**: Mono
 - **Encoding**: PCM
