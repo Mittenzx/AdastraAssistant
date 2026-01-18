@@ -50,11 +50,12 @@ TARGET_METRICS = {
 }
 
 # Validation tolerance ranges (for flexibility in real-world samples)
+# These are decimal fractions (e.g., -0.11 = -11%, 0.05 = 5%)
 VALIDATION_TOLERANCES = {
-    'pitch_lower_bound': -0.11,    # -11% minimum pitch reduction
-    'pitch_upper_bound': -0.05,    # -5% maximum pitch reduction
-    'tempo_lower_bound': -0.15,    # -15% minimum tempo reduction
-    'tempo_upper_bound': -0.05,    # -5% maximum tempo reduction
+    'pitch_lower_bound': -0.11,    # -11% minimum pitch reduction (more is ok)
+    'pitch_upper_bound': -0.05,    # -5% maximum pitch reduction (less is still ok)
+    'tempo_lower_bound': -0.15,    # -15% minimum tempo reduction (slower is ok)
+    'tempo_upper_bound': -0.05,    # -5% maximum tempo reduction (less slow is ok)
     'articulation_lower_bound': 0.05,   # +5% minimum articulation increase
     'articulation_upper_bound': 0.25,   # +25% maximum articulation increase
 }
@@ -193,8 +194,8 @@ class AudioAnalyzer:
         # Use onset detection to estimate syllable rate
         onset_env = librosa.onset.onset_strength(y=y, sr=sr)
         
-        # Check for tempo function in different API versions
-        # librosa >= 0.10.0 moved tempo to feature.tempo or feature.rhythm.tempo
+        # The parameter name is onset_envelope for all current versions
+        # Check for tempo function in different API locations
         if hasattr(librosa.feature, 'tempo'):
             # librosa >= 0.10.0 (direct under feature)
             tempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sr)[0]
@@ -537,7 +538,7 @@ class VoiceProfileValidator:
             validation['checks'].append({
                 'metric': 'Articulation Clarity',
                 'target': f"+{target_articulation * 100:.1f}%",
-                'actual': f"{articulation_change * 100:.+.1f}%",
+                'actual': f"{articulation_change * 100:+.1f}%",  # Fixed format string
                 'meets_target': meets_articulation,
                 'notes': 'Crisp, sharp enunciation'
             })
