@@ -30,11 +30,10 @@ from datetime import datetime
 try:
     import librosa
     import numpy as np
-    import soundfile as sf
     AUDIO_ANALYSIS_AVAILABLE = True
 except ImportError:
     AUDIO_ANALYSIS_AVAILABLE = False
-    print("WARNING: librosa/soundfile not installed. Install with: pip install librosa soundfile numpy", file=sys.stderr)
+    # Note: Warning is printed when AudioAnalyzer is instantiated, not during import
 
 
 # ============================================================================
@@ -431,7 +430,8 @@ class VoiceProfileValidator:
             differences['articulation_change_percent'] = ((test['spectral_centroid_mean'] - baseline['spectral_centroid_mean']) / baseline['spectral_centroid_mean']) * 100
         
         # Duration comparison
-        differences['duration_change_percent'] = ((test['duration'] - baseline['duration']) / baseline['duration']) * 100
+        if baseline['duration'] > 0 and test['duration'] > 0:
+            differences['duration_change_percent'] = ((test['duration'] - baseline['duration']) / baseline['duration']) * 100
         
         return differences
     
