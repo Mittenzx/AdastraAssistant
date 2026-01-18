@@ -49,6 +49,16 @@ TARGET_METRICS = {
     'articulation_increase': 0.15, # 15% clearer articulation
 }
 
+# Validation tolerance ranges (for flexibility in real-world samples)
+VALIDATION_TOLERANCES = {
+    'pitch_lower_bound': -0.11,    # -11% minimum pitch reduction
+    'pitch_upper_bound': -0.05,    # -5% maximum pitch reduction
+    'tempo_lower_bound': -0.15,    # -15% minimum tempo reduction
+    'tempo_upper_bound': -0.05,    # -5% maximum tempo reduction
+    'articulation_lower_bound': 0.05,   # +5% minimum articulation increase
+    'articulation_upper_bound': 0.25,   # +25% maximum articulation increase
+}
+
 # Test samples to generate (subset of full sample set)
 TEST_SAMPLES = [
     {
@@ -182,12 +192,18 @@ class AudioAnalyzer:
         """Analyze speaking rate via tempo detection."""
         # Use onset detection to estimate syllable rate
         onset_env = librosa.onset.onset_strength(y=y, sr=sr)
-        try:
-            # Try new API first (librosa >= 0.10.0)
-            tempo = librosa.feature.rhythm.tempo(onset_envelope=onset_env, sr=sr)[0]
-        except AttributeError:
-            # Fall back to old API
+        
+        # Check for tempo function in different API versions
+        # librosa >= 0.10.0 moved tempo to feature.tempo or feature.rhythm.tempo
+        if hasattr(librosa.feature, 'tempo'):
+            # librosa >= 0.10.0 (direct under feature)
+            tempo = librosa.feature.tempo(onset_envelope=onset_env, sr=sr)[0]
+        elif hasattr(librosa, 'beat') and hasattr(librosa.beat, 'tempo'):
+            # librosa < 0.10.0 (under beat module)
             tempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr)[0]
+        else:
+            # Fallback: use a default estimate if API changes
+            tempo = 120.0  # Default estimate
         
         # Also calculate zero-crossing rate as a proxy for articulation speed
         zcr = librosa.feature.zero_crossing_rate(y)[0]
@@ -473,15 +489,16 @@ class VoiceProfileValidator:
         
         # Check pitch reduction (target: -8%)
         if 'pitch_change_percent' in avg_changes:
-            pitch_change = avg_changes['pitch_change_percent']
-            target_pitch = -TARGET_METRICS['base_pitch_reduction'] * 100  # -8%
+            pitch_change = avg_changes['pitch_change_percent'] / 100  # Convert to decimal
+            target_pitch = -TARGET_METRICS['base_pitch_reduction']
             
-            # Allow ±3% tolerance
-            meets_pitch = -11 <= pitch_change <= -5
+            # Use configured tolerance ranges
+            meets_pitch = (VALIDATION_TOLERANCES['pitch_lower_bound'] <= pitch_change 
+                          <= VALIDATION_TOLERANCES['pitch_upper_bound'])
             validation['checks'].append({
                 'metric': 'Pitch Reduction',
-                'target': f"{target_pitch:.1f}%",
-                'actual': f"{pitch_change:.1f}%",
+                'target': f"{target_pitch * 100:.1f}%",
+                'actual': f"{pitch_change * 100:.1f}%",
                 'meets_target': meets_pitch,
                 'notes': 'Lower pitch for mature voice quality'
             })
@@ -491,16 +508,17 @@ class VoiceProfileValidator:
         
         # Check rate reduction (target: -10% = slower)
         if 'tempo_change_percent' in avg_changes:
-            tempo_change = avg_changes['tempo_change_percent']
-            target_tempo = -TARGET_METRICS['rate_reduction'] * 100  # -10%
+            tempo_change = avg_changes['tempo_change_percent'] / 100  # Convert to decimal
+            target_tempo = -TARGET_METRICS['rate_reduction']
             
             # Tempo is inverse of rate, so negative tempo change = slower speech (good)
-            # Allow ±5% tolerance
-            meets_rate = -15 <= tempo_change <= -5
+            # Use configured tolerance ranges
+            meets_rate = (VALIDATION_TOLERANCES['tempo_lower_bound'] <= tempo_change 
+                         <= VALIDATION_TOLERANCES['tempo_upper_bound'])
             validation['checks'].append({
                 'metric': 'Speaking Rate',
-                'target': f"{target_tempo:.1f}% slower",
-                'actual': f"{tempo_change:.1f}%",
+                'target': f"{target_tempo * 100:.1f}% slower",
+                'actual': f"{tempo_change * 100:.1f}%",
                 'meets_target': meets_rate,
                 'notes': 'Measured, deliberate pacing'
             })
@@ -510,15 +528,16 @@ class VoiceProfileValidator:
         
         # Check articulation increase (target: +15%)
         if 'articulation_change_percent' in avg_changes:
-            articulation_change = avg_changes['articulation_change_percent']
-            target_articulation = TARGET_METRICS['articulation_increase'] * 100  # +15%
+            articulation_change = avg_changes['articulation_change_percent'] / 100  # Convert to decimal
+            target_articulation = TARGET_METRICS['articulation_increase']
             
-            # Allow ±10% tolerance (articulation is harder to measure precisely)
-            meets_articulation = 5 <= articulation_change <= 25
+            # Use configured tolerance ranges (articulation is harder to measure precisely)
+            meets_articulation = (VALIDATION_TOLERANCES['articulation_lower_bound'] <= articulation_change 
+                                 <= VALIDATION_TOLERANCES['articulation_upper_bound'])
             validation['checks'].append({
                 'metric': 'Articulation Clarity',
-                'target': f"+{target_articulation:.1f}%",
-                'actual': f"{articulation_change:.+.1f}%",
+                'target': f"+{target_articulation * 100:.1f}%",
+                'actual': f"{articulation_change * 100:.+.1f}%",
                 'meets_target': meets_articulation,
                 'notes': 'Crisp, sharp enunciation'
             })
