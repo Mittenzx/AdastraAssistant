@@ -35,11 +35,12 @@ The easiest way to regenerate the audio files is using the GitHub Actions workfl
 ✅ Sets up Python 3.11 environment  
 ✅ Installs TTS library and dependencies  
 ✅ Creates automatic backup of current audio  
-✅ Regenerates all 34 audio files:
-   - 6 greetings
-   - 16 dialogue samples (hostile, curious, cooperative)
-   - 7 notifications
-   - 5 sound effects
+✅ Regenerates **19 voice samples** (TTS-generated):
+   - 3 greetings
+   - 12 dialogue samples (hostile, curious, cooperative, companion messages)
+   - 4 notifications
+
+_Note: The repository contains 34 total audio files. The workflow regenerates only the 19 voice samples. The remaining 15 sound effect files (button clicks, menu sounds, etc.) in the `sounds/` directory are pre-existing assets that are not regenerated._
 
 ✅ Applies Hitagi-inspired voice characteristics:
    - Lower-medium pitch (8% reduction)
