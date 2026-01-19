@@ -8,11 +8,17 @@
 
 ## Current Status
 
-The TTS generation scripts and Hitagi-inspired voice profiles are fully implemented and tested. The current audio files in `src/main/resources/audio/` were generated on **January 18, 2026** and need to be regenerated with the latest voice model enhancements.
+The TTS generation scripts and Hitagi-inspired voice profiles are fully implemented and tested. The current audio files in `src/main/resources/audio/` were generated on **January 18, 2026** using the Hitagi-inspired voice model v1.0.
+
+✅ **Current Status**: The audio files are **production-ready and do not require regeneration**. They already incorporate all Hitagi-inspired voice characteristics.
+
+📋 **Purpose of This Document**: This guide is provided for **future regeneration** if voice model parameters are refined (v2.1+) or if user feedback indicates improvements are needed.
 
 ### What Changed in v2.0
 
-The VOICE_MODEL_TARGET.md document has been enhanced with:
+**Note**: The v2.0 enhancements are **documentation improvements only**. The audio files generated on January 18, 2026 already use voice model v1.0 and are production-ready.
+
+The VOICE_MODEL_TARGET.md document v2.0 adds:
 
 1. **Troubleshooting Section**: Common issues and solutions for voice generation
 2. **Quality Assurance Checklist**: Comprehensive validation criteria
@@ -76,6 +82,14 @@ pip install -r requirements.txt
 ---
 
 ## Regeneration Instructions
+
+**⚠️ IMPORTANT**: These instructions are for **optional future regeneration** only. The current audio files are production-ready and do not need to be regenerated.
+
+Use this guide if:
+- You want to test voice model v2.1+ refinements
+- User feedback indicates specific improvements are needed
+- New emotion profiles or dialogue is added
+- You need to experiment with parameter adjustments
 
 Once you have a Python 3.9-3.11 environment set up:
 
@@ -296,9 +310,14 @@ Update VOICE_MODEL_TARGET.md status section:
 
 ## Notes for Maintainer
 
-The audio files currently in the repository (dated January 18, 2026) were generated with the Hitagi-inspired voice model. However, they should be regenerated to ensure they incorporate all the latest enhancements and refinements documented in VOICE_MODEL_TARGET.md v2.0.
+The audio files currently in the repository (dated January 18, 2026) were generated with the Hitagi-inspired voice model v1.0 and are **production-ready**. 
 
-The regeneration process is straightforward once a Python 3.11 environment is available. If you need assistance with:
+**No action required** unless you want to:
+- Test refined parameters for voice model v2.1+
+- Experiment with new emotion profiles
+- Regenerate based on user feedback
+
+This document provides instructions for optional future regeneration once a Python 3.11 environment is available. If you need assistance with:
 
 - Setting up the Python environment
 - Troubleshooting TTS installation
