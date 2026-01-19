@@ -1,0 +1,106 @@
+name: Regenerate Audio Files
+
+# This workflow regenerates all audio files using the Hitagi-inspired voice model
+# It can be triggered manually from the Actions tab
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_message:
+        description: 'Commit message for the regenerated audio files'
+        required: false
+        default: 'Regenerate audio files with Hitagi voice model'
+
+jobs:
+  regenerate-audio:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Create backup of current audio files
+        run: |
+          mkdir -p /tmp/audio_backup
+          cp -r src/main/resources/audio /tmp/audio_backup/
+          echo "Backup created at /tmp/audio_backup/audio"
+      
+      - name: Regenerate audio files
+        run: |
+          chmod +x scripts/regenerate_samples.sh
+          ./scripts/regenerate_samples.sh
+      
+      - name: Verify audio files were generated
+        run: |
+          echo "Checking generated audio files..."
+          find src/main/resources/audio -name "*.wav" -type f | wc -l
+          echo "Audio files should be: 34 (or more)"
+          
+          echo ""
+          echo "File sizes:"
+          du -h src/main/resources/audio/**/*.wav | head -10
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if [ -n "$(git status --porcelain src/main/resources/audio)" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Audio files have been modified"
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes to audio files"
+          fi
+      
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add src/main/resources/audio
+          git commit -m "${{ github.event.inputs.commit_message }}"
+          git push
+      
+      - name: Upload backup as artifact
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: audio-backup
+          path: /tmp/audio_backup/audio
+          retention-days: 30
+      
+      - name: Summary
+        run: |
+          echo "## Audio Regeneration Complete 🎙️" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All 34 audio files have been regenerated using the Hitagi-inspired voice model." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Files Generated:" >> $GITHUB_STEP_SUMMARY
+          echo "- Greetings: 6 files" >> $GITHUB_STEP_SUMMARY
+          echo "- Dialogue: 16 files (hostile, curious, cooperative)" >> $GITHUB_STEP_SUMMARY
+          echo "- Notifications: 7 files" >> $GITHUB_STEP_SUMMARY
+          echo "- Sounds: 5 files" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Voice Characteristics:" >> $GITHUB_STEP_SUMMARY
+          echo "- Lower-medium pitch (8% reduction)" >> $GITHUB_STEP_SUMMARY
+          echo "- Measured delivery (10-15% slower)" >> $GITHUB_STEP_SUMMARY
+          echo "- Crisp articulation with sharp consonants" >> $GITHUB_STEP_SUMMARY
+          echo "- Strategic pauses (20-30% longer)" >> $GITHUB_STEP_SUMMARY
+          echo "- Controlled emotional expression" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check_changes.outputs.changes }}" == "true" ]; then
+            echo "✅ Changes committed and pushed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "A backup of the previous audio files is available in the workflow artifacts." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ No changes detected - audio files are already up to date" >> $GITHUB_STEP_SUMMARY
+          fi

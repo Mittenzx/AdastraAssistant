@@ -39,7 +39,31 @@ The VOICE_MODEL_TARGET.md document v2.0 adds:
 
 ### Solution Options
 
-#### Option 1: Use pyenv (Recommended)
+#### Option 1: GitHub Actions Workflow (Easiest)
+
+The repository includes a GitHub Actions workflow that can regenerate all audio files automatically:
+
+1. **Navigate to Actions tab** in your GitHub repository
+2. **Select "Regenerate Audio Files"** workflow
+3. **Click "Run workflow"** button
+4. **Optionally customize** the commit message
+5. **Click "Run workflow"** to start
+
+The workflow will:
+- Set up Python 3.11 environment
+- Install all dependencies
+- Create a backup of current audio files
+- Regenerate all 34 audio files
+- Commit and push the changes automatically
+- Upload backup as artifact (available for 30 days)
+
+**Advantages**:
+- No local setup required
+- Runs in controlled environment with network access
+- Automatic backup and commit
+- Progress visible in Actions tab
+
+#### Option 2: Use pyenv (Recommended for Local)
 ```bash
 # Install pyenv if not already installed
 curl https://pyenv.run | bash
@@ -62,7 +86,7 @@ source tts-env/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Option 2: Use conda
+#### Option 3: Use conda
 ```bash
 # Create conda environment with Python 3.11
 conda create -n tts-env python=3.11
@@ -72,7 +96,9 @@ conda activate tts-env
 pip install -r requirements.txt
 ```
 
-#### Option 3: Use Docker
+#### Option 4: Use Docker
+
+**Note**: Docker requires network access to download TTS models. This may not work in restricted CI environments.
 ```bash
 # Use a Docker container with Python 3.11
 docker run -it --rm -v $(pwd):/app python:3.11 bash
