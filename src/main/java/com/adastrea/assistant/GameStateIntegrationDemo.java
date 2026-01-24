@@ -2,7 +2,7 @@ package com.adastrea.assistant;
 
 /**
  * Demonstration of the Game State Integration system.
- * Shows how the Adastrea Minecraft mod can connect to the AIAssistant
+ * Shows how games (such as the Adastrea mod) can connect to the AIAssistant
  * and trigger contextual responses based on game events.
  */
 public class GameStateIntegrationDemo {

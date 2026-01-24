@@ -1,6 +1,6 @@
 # Game State Integration Guide
 
-This guide explains how to integrate the AdastreaAssistant with your Minecraft mod or game to enable context-aware AI companion interactions.
+This guide explains how to integrate the AdastreaAssistant with the Adastrea mod or other games to enable context-aware AI companion interactions.
 
 ## Overview
 

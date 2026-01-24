@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Integration layer between the game (Minecraft/Adastrea mod) and the AI Assistant.
+ * Integration layer between the game and the AI Assistant.
  * This class implements GameStateListener and translates game events into
  * appropriate assistant responses.
  */
