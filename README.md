@@ -65,6 +65,7 @@ See the [Implementation Roadmap](docs/IMPLEMENTATION_ROADMAP.md) for development
 **Audio System**: 🎯 **Active Development** - Human-like voice generation system ready for implementation (see [Human Audio Plan](docs/HUMAN_AUDIO_PLAN.md))
 
 **Overall**: Foundation complete. Phase 2 game integration layer now available. See [Game State Integration Guide](docs/GAME_STATE_INTEGRATION.md) for Adastrea mod integration.
+
 An in-game AI assistant for the Adastrea (Ad Astra) Minecraft mod that provides companionship, teaching, and reminders to players during their space exploration adventures.
 
 ## Features

@@ -32,6 +32,10 @@ public class ContextTracker {
      * Record a new interaction (player query or assistant response)
      */
     public void recordInteraction(String speaker, String message, InteractionType type) {
+        if (speaker == null || message == null || type == null) {
+            throw new IllegalArgumentException("Parameters cannot be null");
+        }
+        
         Interaction interaction = new Interaction(speaker, message, type, System.currentTimeMillis());
         interactionHistory.add(interaction);
         
@@ -47,6 +51,10 @@ public class ContextTracker {
      * Record a game event that occurred
      */
     public void recordEvent(String eventType, String description, EventSeverity severity) {
+        if (eventType == null || description == null || severity == null) {
+            throw new IllegalArgumentException("Parameters cannot be null");
+        }
+        
         GameEvent event = new GameEvent(eventType, description, severity, System.currentTimeMillis());
         recentEvents.add(event);
         

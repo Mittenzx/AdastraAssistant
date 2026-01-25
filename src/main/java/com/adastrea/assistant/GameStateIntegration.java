@@ -23,6 +23,10 @@ public class GameStateIntegration implements GameStateListener {
     private static final int EMERGENCY_CRITICAL_SEVERITY = 4;
     private static final int EMERGENCY_HIGH_SEVERITY = 3;
     private static final int IDLE_TIME_THRESHOLD_MINUTES = 5;
+    private static final double TEMPERATURE_EXTREME_HEAT = 100.0;
+    private static final double TEMPERATURE_DANGEROUS_COLD = -50.0;
+    private static final double TEMPERATURE_CRITICAL_COLD = -100.0;
+    private static final double TEMPERATURE_CRITICAL_HEAT = 150.0;
     
     public GameStateIntegration(AIAssistant assistant) {
         this.assistant = assistant;
@@ -55,10 +59,9 @@ public class GameStateIntegration implements GameStateListener {
         
         // Record in context
         contextTracker.recordEvent("oxygen_low", "Oxygen at " + oxygenLevel + "%", 
-            oxygenLevel < 20 ? ContextTracker.EventSeverity.CRITICAL : ContextTracker.EventSeverity.HIGH);
+            oxygenLevel < OXYGEN_CRITICAL_THRESHOLD ? ContextTracker.EventSeverity.CRITICAL : ContextTracker.EventSeverity.HIGH);
         contextTracker.updatePlayerState("oxygen", oxygenLevel);
         
-        String urgency = oxygenLevel < HEALTH_CRITICAL_THRESHOLD ? "urgent" : "worried";
         String message;
         
         if (oxygenLevel < OXYGEN_CRITICAL_THRESHOLD) {
@@ -71,12 +74,6 @@ public class GameStateIntegration implements GameStateListener {
         }
         
         assistant.speak(message);
-        
-        // Mark oxygen as a concern in context
-        if (assistant.getProfile() instanceof MittenzProfile) {
-            MittenzProfile mittenz = (MittenzProfile) assistant.getProfile();
-            mittenz.recordConcern("oxygen");
-        }
     }
     
     @Override
@@ -85,8 +82,10 @@ public class GameStateIntegration implements GameStateListener {
         
         String message;
         if (isDangerous) {
-            if (temperature > 100) {
+            if (temperature > TEMPERATURE_EXTREME_HEAT) {
                 message = "Extreme heat detected! " + temperature + " degrees. Find shelter immediately!";
+            } else if (temperature < TEMPERATURE_DANGEROUS_COLD) {
+                message = "Temperature critical: " + temperature + " degrees. This could be dangerous.";
             } else {
                 message = "Temperature critical: " + temperature + " degrees. This could be dangerous.";
             }
@@ -244,6 +243,17 @@ public class GameStateIntegration implements GameStateListener {
     
     @Override
     public void onEmergency(String emergencyType, int severity) {
+        // Record emergency event in context tracker
+        ContextTracker.EventSeverity eventSeverity;
+        if (severity >= EMERGENCY_CRITICAL_SEVERITY) {
+            eventSeverity = ContextTracker.EventSeverity.CRITICAL;
+        } else if (severity >= EMERGENCY_HIGH_SEVERITY) {
+            eventSeverity = ContextTracker.EventSeverity.HIGH;
+        } else {
+            eventSeverity = ContextTracker.EventSeverity.MEDIUM;
+        }
+        contextTracker.recordEvent("emergency", emergencyType, eventSeverity);
+        
         String message;
         
         if (severity >= EMERGENCY_CRITICAL_SEVERITY) {
@@ -255,12 +265,6 @@ public class GameStateIntegration implements GameStateListener {
         }
         
         assistant.speak(message);
-        
-        // Record emergency for context
-        if (assistant.getProfile() instanceof MittenzProfile) {
-            MittenzProfile mittenz = (MittenzProfile) assistant.getProfile();
-            mittenz.recordConcern(emergencyType);
-        }
     }
     
     @Override

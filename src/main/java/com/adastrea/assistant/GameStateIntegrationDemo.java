@@ -107,7 +107,7 @@ public class GameStateIntegrationDemo {
     
     private static void sleep(int seconds) {
         try {
-            Thread.sleep(seconds * 1000);
+            Thread.sleep((long) seconds * 1000L);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

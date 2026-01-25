@@ -157,7 +157,7 @@ Mittenz's responses change based on her relationship stage:
   - "How does that work?"
   - "Interesting..."
 
-#### Cooperative (After 10+ interactions)
+#### Cooperative (After 15+ interactions)
 - Helpful, engaged, team-oriented
 - Examples:
   - "Let me scan that for you."
